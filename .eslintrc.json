@@ -4,7 +4,9 @@
     "project": "./tsconfig.json"
   },
   "rules": {
-    "@typescript-eslint/strict-boolean-expressions": 0
+    "@typescript-eslint/strict-boolean-expressions": 0,
+    "@typescript-eslint/semi": 0
+
   },
   "plugins": [
     "@typescript-eslint"
