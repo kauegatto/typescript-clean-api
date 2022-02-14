@@ -5,22 +5,15 @@ import { HttpHelper } from '../helpers/HttpHelper';
 
 export class SignUpController {
   handle (httpRequest: HttpRequest): HttpResponse {
-    if (!httpRequest.body.name) {
-      return HttpHelper.badRequest(new MissingParamError('name'));
-    }
-    if (!httpRequest.body.email) {
-      return HttpHelper.badRequest(new MissingParamError('email'));
-    }
-    if (!httpRequest.body.password) {
-      return HttpHelper.badRequest(new MissingParamError('password'));
-    }
-    if (!httpRequest.body.passwordConfirmation) {
-      return HttpHelper.badRequest(new MissingParamError('password confirmation'));
+    const requiredFields: string[] = ['name', 'email', 'password', 'passwordConfirmation'];
+    for (const field of requiredFields) {
+      if (!httpRequest.body[field]) {
+        return HttpHelper.badRequest(new MissingParamError(field))
+      }
     }
     if (!(httpRequest.body.password === httpRequest.body.passwordConfirmation)) {
-      return HttpHelper.badRequest(new Error('password and passwor confirmation are different'));
+      return HttpHelper.badRequest(new Error('password and password confirmation are different'));
     }
-
     return HttpHelper.created<string>(httpRequest.body);
 
     // should be: return HttpHelper.created<User> when domain entity is created
