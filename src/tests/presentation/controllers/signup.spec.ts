@@ -128,4 +128,23 @@ describe('SignUp Controller', () => {
     const httpResponse = sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(201);
   });
+  test('Should return 500 if emailValidator throws', () => {
+    class EmailValidatorThrow implements EmailValidatorAdapter {
+      isValid (email: string): boolean {
+        throw new Error('internal server');
+      }
+    }
+    const emailValidatorStub = new EmailValidatorThrow();
+    const sut = new SignUpController(emailValidatorStub);
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        email: 'email@gmail.com',
+        password: 'any_password',
+        passwordConfirmation: 'any_password'
+      }
+    };
+    const httpResponse = sut.handle(httpRequest);
+    expect(httpResponse.statusCode).toBe(500);
+  });
 });
