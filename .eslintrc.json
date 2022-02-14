@@ -4,8 +4,9 @@
     "project": "./tsconfig.json"
   },
   "rules": {
-    "@typescript-eslint/strict-boolean-expressions": 0,
-    "@typescript-eslint/semi": 0
+    "@typescript-eslint/strict-boolean-expressions": 0, // was not working even if strict boolean was turned on
+    "@typescript-eslint/semi": 0, // unexpected results
+    "@typescript-eslint/no-extraneous-class": 0 //allows for helper classes
 
   },
   "plugins": [
