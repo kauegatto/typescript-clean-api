@@ -1,8 +1,12 @@
 import { SignUpController } from '../../../presentation/controllers/SignUp';
 
+const makeSut = (): SignUpController => {
+  return new SignUpController()
+}
+
 describe('SignUp Controller', () => {
   test('Should return 400 if no name is provided ', () => {
-    const sut = new SignUpController();
+    const sut = makeSut();
     const httpRequest = {
       body: {
         name: '',
@@ -15,7 +19,7 @@ describe('SignUp Controller', () => {
     expect(httpResponse.statusCode).toBe(400);
   });
   test('Should return 400 if no email is provided ', () => {
-    const sut = new SignUpController();
+    const sut = makeSut();
     const httpRequest = {
       body: {
         name: 'any_name',
@@ -28,7 +32,7 @@ describe('SignUp Controller', () => {
     expect(httpResponse.statusCode).toBe(400);
   });
   test('Should return 400 if no password is provided ', () => {
-    const sut = new SignUpController();
+    const sut = makeSut();
     const httpRequest = {
       body: {
         name: 'any_name',
@@ -41,7 +45,7 @@ describe('SignUp Controller', () => {
     expect(httpResponse.statusCode).toBe(400);
   });
   test('Should return 400 if no password confirmation is provided ', () => {
-    const sut = new SignUpController();
+    const sut = makeSut();
     const httpRequest = {
       body: {
         name: 'any_name',
@@ -54,7 +58,7 @@ describe('SignUp Controller', () => {
     expect(httpResponse.statusCode).toBe(400);
   });
   test('Should return 400 if password and password and password confirmation are different ', () => {
-    const sut = new SignUpController();
+    const sut = makeSut();
     const httpRequest = {
       body: {
         name: 'any_name',
@@ -66,8 +70,21 @@ describe('SignUp Controller', () => {
     const httpResponse = sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
   });
+  test('Should return 400 if email provided is invalid', () => {
+    const sut = makeSut();
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        email: 'JaneDoeEmail.mail',
+        password: 'any_password',
+        passwordConfirmation: 'another pass'
+      }
+    };
+    const httpResponse = sut.handle(httpRequest);
+    expect(httpResponse.statusCode).toBe(400);
+  })
   test('Should return 201 if valid body is provided ', () => {
-    const sut = new SignUpController();
+    const sut = makeSut();
     const httpRequest = {
       body: {
         name: 'any_name',

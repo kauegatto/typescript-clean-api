@@ -3,6 +3,7 @@ import HttpRequest from '../interfaces/protocols/HttpRequest';
 import HttpResponse from '../interfaces/protocols/HttpResponse';
 import { HttpHelper } from '../helpers/HttpHelper';
 import { ControllerBase } from '../interfaces/ControllerBase';
+import { InvalidParamError } from '../errors/InvalidParamError';
 
 export class SignUpController implements ControllerBase {
   handle (httpRequest: HttpRequest): HttpResponse {
@@ -13,7 +14,7 @@ export class SignUpController implements ControllerBase {
       }
     }
     if (!(httpRequest.body.password === httpRequest.body.passwordConfirmation)) {
-      return HttpHelper.badRequest(new Error('password and password confirmation are different'));
+      return HttpHelper.badRequest(new InvalidParamError('password and password confirmation'));
     }
     return HttpHelper.created<string>(httpRequest.body);
 
