@@ -3,6 +3,8 @@
     "outDir": "./dist",
     "module": "commonjs",
     "target": "es2020",
+    "strictNullChecks": true,
+    "strict": true,
     "esModuleInterop": true,
     "allowJs": true
   }
