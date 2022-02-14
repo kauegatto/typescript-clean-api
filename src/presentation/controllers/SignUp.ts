@@ -1,3 +1,4 @@
+import { MissingParamError } from '../errors/MissingParamError';
 import HttpRequest from '../interfaces/protocols/HttpRequest';
 import HttpResponse from '../interfaces/protocols/HttpResponse';
 
@@ -6,25 +7,25 @@ export class SignUpController {
     if (!httpRequest.body.name) {
       return {
         statusCode: 400,
-        body: new Error('Name is missing')
+        body: new MissingParamError('name')
       };
     }
     if (!httpRequest.body.email) {
       return {
         statusCode: 400,
-        body: new Error('Email is missing')
+        body: new MissingParamError('email')
       };
     }
     if (!httpRequest.body.password) {
       return {
         statusCode: 400,
-        body: new Error('Password is missing')
+        body: new MissingParamError('password')
       };
     }
     if (!httpRequest.body.passwordConfirmation) {
       return {
         statusCode: 400,
-        body: new Error('Password confirmation is missing')
+        body: new MissingParamError('password confirmation')
       };
     }
     if (!(httpRequest.body.password === httpRequest.body.passwordConfirmation)) {
