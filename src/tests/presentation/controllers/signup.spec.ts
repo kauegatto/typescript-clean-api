@@ -6,7 +6,7 @@ interface SutTypes {
   emailValidator: EmailValidatorAdapter
 }
 
-const makeSut = (): SutTypes => {
+const sutFactory = (): SutTypes => {
   class EmailValidatorStub implements EmailValidatorAdapter {
     isValid (email: string): boolean {
       return true
@@ -22,7 +22,7 @@ const makeSut = (): SutTypes => {
 
 describe('SignUp Controller', () => {
   test('Should return 400 if no name is provided ', () => {
-    const { sut } = makeSut();
+    const { sut } = sutFactory();
     const httpRequest = {
       body: {
         name: '',
@@ -35,7 +35,7 @@ describe('SignUp Controller', () => {
     expect(httpResponse.statusCode).toBe(400);
   });
   test('Should return 400 if no email is provided ', () => {
-    const { sut } = makeSut();
+    const { sut } = sutFactory();
     const httpRequest = {
       body: {
         name: 'any_name',
@@ -48,7 +48,7 @@ describe('SignUp Controller', () => {
     expect(httpResponse.statusCode).toBe(400);
   });
   test('Should return 400 if no password is provided ', () => {
-    const { sut } = makeSut();
+    const { sut } = sutFactory();
     const httpRequest = {
       body: {
         name: 'any_name',
@@ -61,7 +61,7 @@ describe('SignUp Controller', () => {
     expect(httpResponse.statusCode).toBe(400);
   });
   test('Should return 400 if no password confirmation is provided ', () => {
-    const { sut } = makeSut();
+    const { sut } = sutFactory();
     const httpRequest = {
       body: {
         name: 'any_name',
@@ -74,7 +74,7 @@ describe('SignUp Controller', () => {
     expect(httpResponse.statusCode).toBe(400);
   });
   test('Should return 400 if password and password and password confirmation are different ', () => {
-    const { sut } = makeSut();
+    const { sut } = sutFactory();
     const httpRequest = {
       body: {
         name: 'any_name',
@@ -87,7 +87,7 @@ describe('SignUp Controller', () => {
     expect(httpResponse.statusCode).toBe(400);
   });
   test('Should return 400 if invalid email is provided', () => {
-    const { sut, emailValidator } = makeSut();
+    const { sut, emailValidator } = sutFactory();
     jest.spyOn(emailValidator, 'isValid').mockReturnValueOnce(false);
     // boa prática : iniciar mock como true e mockar valor falso onde quiser que falhe.
     const httpRequest = {
@@ -102,7 +102,7 @@ describe('SignUp Controller', () => {
     expect(httpResponse.statusCode).toBe(400);
   });
   test('Should call emailValidator.isValid with correct email ', () => {
-    const { sut, emailValidator } = makeSut();
+    const { sut, emailValidator } = sutFactory();
     const isValidSpy = jest.spyOn(emailValidator, 'isValid');
     const httpRequest = {
       body: {
@@ -116,7 +116,7 @@ describe('SignUp Controller', () => {
     expect(isValidSpy).toBeCalledWith('jorge@gmail.com');
   });
   test('Should return 201 if valid body is provided ', () => {
-    const { sut } = makeSut();
+    const { sut } = sutFactory();
     const httpRequest = {
       body: {
         name: 'any_name',
@@ -129,13 +129,11 @@ describe('SignUp Controller', () => {
     expect(httpResponse.statusCode).toBe(201);
   });
   test('Should return 500 if emailValidator throws', () => {
-    class EmailValidatorThrow implements EmailValidatorAdapter {
-      isValid (email: string): boolean {
-        throw new Error('internal server');
-      }
-    }
-    const emailValidatorStub = new EmailValidatorThrow();
-    const sut = new SignUpController(emailValidatorStub);
+    const { sut, emailValidator } = sutFactory()
+    jest.spyOn(emailValidator, 'isValid').mockImplementationOnce(() => {
+      throw new Error();
+    })
+
     const httpRequest = {
       body: {
         name: 'any_name',
