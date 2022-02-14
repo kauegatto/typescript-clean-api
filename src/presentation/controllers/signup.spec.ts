@@ -77,7 +77,6 @@ describe('SignUp Controller', () => {
       }
     };
     const httpResponse = sut.handle(httpRequest);
-    console.log(httpResponse.body);
     expect(httpResponse.statusCode).toBe(201);
   });
 });

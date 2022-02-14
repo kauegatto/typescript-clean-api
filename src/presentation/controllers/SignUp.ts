@@ -3,41 +3,31 @@ export class SignUpController {
     if (!httpRequest.body.name) {
       return {
         statusCode: 400,
-        body: {
-          error: 'name is missing'
-        }
+        body: new Error('Name is missing')
       };
     }
     if (!httpRequest.body.email) {
       return {
         statusCode: 400,
-        body: {
-          error: 'email is missing'
-        }
+        body: new Error('Email is missing')
       };
     }
     if (!httpRequest.body.password) {
       return {
         statusCode: 400,
-        body: {
-          error: 'password is missing'
-        }
+        body: new Error('Password is missing')
       };
     }
     if (!httpRequest.body.passwordConfirmation) {
       return {
         statusCode: 400,
-        body: {
-          error: 'password confirmation is missing'
-        }
+        body: new Error('Password confirmation is missing')
       };
     }
     if (!(httpRequest.body.password === httpRequest.body.passwordConfirmation)) {
       return {
         statusCode: 400,
-        body: {
-          error: 'password and password confirmation are different'
-        }
+        body: new Error('Password and password confirmatin are different')
       };
     }
     return {
