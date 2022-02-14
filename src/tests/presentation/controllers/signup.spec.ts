@@ -100,7 +100,21 @@ describe('SignUp Controller', () => {
     };
     const httpResponse = sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
-  })
+  });
+  test('Should call emailValidator.isValid with correct email ', () => {
+    const { sut, emailValidator } = makeSut();
+    const isValidSpy = jest.spyOn(emailValidator, 'isValid');
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        email: 'jorge@gmail.com',
+        password: 'any_password',
+        passwordConfirmation: 'any_password'
+      }
+    };
+    sut.handle(httpRequest);
+    expect(isValidSpy).toBeCalledWith('jorge@gmail.com');
+  });
   test('Should return 201 if valid body is provided ', () => {
     const { sut } = makeSut();
     const httpRequest = {
