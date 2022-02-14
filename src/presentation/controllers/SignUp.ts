@@ -13,24 +13,23 @@ export class SignUpController implements ControllerBase {
   }
 
   handle (httpRequest: HttpRequest): HttpResponse {
-    const requiredFields: string[] = ['name', 'email', 'password', 'passwordConfirmation'];
-    for (const field of requiredFields) {
-      if (!httpRequest.body[field]) {
-        return HttpHelper.badRequest(new MissingParamError(field))
-      }
-    }
-    if (!(httpRequest.body.password === httpRequest.body.passwordConfirmation)) {
-      return HttpHelper.badRequest(new InvalidParamError('password and password confirmation'));
-    }
     try {
+      const requiredFields: string[] = ['name', 'email', 'password', 'passwordConfirmation'];
+      for (const field of requiredFields) {
+        if (!httpRequest.body[field]) {
+          return HttpHelper.badRequest(new MissingParamError(field))
+        }
+      }
+      if (!(httpRequest.body.password === httpRequest.body.passwordConfirmation)) {
+        return HttpHelper.badRequest(new InvalidParamError('password and password confirmation'));
+      }
       if (!this._emailValidator.isValid(httpRequest.body.email)) {
         return HttpHelper.badRequest(new InvalidParamError('email'))
       }
+      return HttpHelper.created<string>(httpRequest.body);
     } catch {
       return HttpHelper.internalServerError();
     }
-    return HttpHelper.created<string>(httpRequest.body);
-
     // should be: return HttpHelper.created<User> when domain entity is created
   }
 }
