@@ -32,7 +32,7 @@ export class HttpHelper { // no keyword for final, using private constructor ins
 
   public static created<T> (entity: T): HttpResponse {
     return {
-      statusCode: 204,
+      statusCode: 201,
       body: entity
     }
   }
