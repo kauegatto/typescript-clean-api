@@ -22,8 +22,12 @@ export class SignUpController implements ControllerBase {
     if (!(httpRequest.body.password === httpRequest.body.passwordConfirmation)) {
       return HttpHelper.badRequest(new InvalidParamError('password and password confirmation'));
     }
-    if (!this._emailValidator.isValid(httpRequest.body.email)) {
-      return HttpHelper.badRequest(new InvalidParamError('email'))
+    try {
+      if (!this._emailValidator.isValid(httpRequest.body.email)) {
+        return HttpHelper.badRequest(new InvalidParamError('email'))
+      }
+    } catch {
+      return HttpHelper.internalServerError();
     }
     return HttpHelper.created<string>(httpRequest.body);
 
