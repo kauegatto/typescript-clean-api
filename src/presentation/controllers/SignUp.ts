@@ -4,8 +4,14 @@ import HttpResponse from '../interfaces/protocols/HttpResponse';
 import { HttpHelper } from '../helpers/HttpHelper';
 import { ControllerBase } from '../interfaces/ControllerBase';
 import { InvalidParamError } from '../errors/InvalidParamError';
+import { EmailValidatorAdapter } from '../interfaces/EmailValidatorAdapter';
 
 export class SignUpController implements ControllerBase {
+  private readonly _emailValidator: EmailValidatorAdapter;
+  constructor (emailValidator: EmailValidatorAdapter) {
+    this._emailValidator = emailValidator;
+  }
+
   handle (httpRequest: HttpRequest): HttpResponse {
     const requiredFields: string[] = ['name', 'email', 'password', 'passwordConfirmation'];
     for (const field of requiredFields) {
@@ -15,6 +21,9 @@ export class SignUpController implements ControllerBase {
     }
     if (!(httpRequest.body.password === httpRequest.body.passwordConfirmation)) {
       return HttpHelper.badRequest(new InvalidParamError('password and password confirmation'));
+    }
+    if (!this._emailValidator.isValid(httpRequest.body.email)) {
+      return HttpHelper.badRequest(new InvalidParamError('email'))
     }
     return HttpHelper.created<string>(httpRequest.body);
 
