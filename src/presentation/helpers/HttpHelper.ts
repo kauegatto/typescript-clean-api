@@ -36,4 +36,11 @@ export class HttpHelper { // no keyword for final, using private constructor ins
       body: entity
     }
   }
+
+  public static internalServerError (): HttpResponse {
+    return {
+      statusCode: 500,
+      body: 'internal server error'
+    }
+  }
 }
