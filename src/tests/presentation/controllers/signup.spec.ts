@@ -1,29 +1,53 @@
 import { SignUpController } from '../../../presentation/controllers/SignUp';
 import { EmailValidatorAdapter } from '../../../presentation/interfaces/EmailValidatorAdapter';
+import HttpRequest from '../../../presentation/interfaces/protocols/HttpRequest';
+import AccountModel from '../../../domain/models/Account';
+import { AddAccount, AddAccountModel } from '../../../domain/usecases/AddAccount';
 
 interface SutTypes {
   sut: SignUpController
   emailValidator: EmailValidatorAdapter
+  addAccountStub: AddAccount
+}
+
+const emailValidatorStubFactory = (): EmailValidatorAdapter => {
+  class EmailValidatorStub implements EmailValidatorAdapter {
+    isValid (email: string): boolean {
+      return true;
+    }
+  }
+  return new EmailValidatorStub();
+}
+const addAccountStubFactory = (): AddAccount => {
+  class AddAccountStub implements AddAccount {
+    add (account: AddAccountModel): AccountModel {
+      const fakeAccount = {
+        id: 'valid_id',
+        name: 'valid_name',
+        email: 'valid_email@email.com',
+        password: 'valid_password'
+      }
+      return fakeAccount
+    }
+  }
+  return new AddAccountStub();
 }
 
 const sutFactory = (): SutTypes => {
-  class EmailValidatorStub implements EmailValidatorAdapter {
-    isValid (email: string): boolean {
-      return true
-    }
-  }
-  const emailValidatorStub = new EmailValidatorStub();
-  const sut = new SignUpController(emailValidatorStub);
+  const emailValidatorStub = emailValidatorStubFactory();
+  const addAccountStub = addAccountStubFactory();
+  const sut = new SignUpController(emailValidatorStub, addAccountStub);
   return {
     sut, // equals to sut: sut
-    emailValidator: emailValidatorStub
+    emailValidator: emailValidatorStub,
+    addAccountStub: addAccountStub
   }
 }
 
 describe('SignUp Controller', () => {
   test('Should return 400 if no name is provided ', () => {
     const { sut } = sutFactory();
-    const httpRequest = {
+    const httpRequest: HttpRequest = {
       body: {
         name: '',
         email: 'email@gmail.com',
@@ -144,5 +168,23 @@ describe('SignUp Controller', () => {
     };
     const httpResponse = sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
+  });
+  test('should call addAccount with correct values', () => {
+    const { sut, addAccountStub } = sutFactory();
+    const addAccountSpy = jest.spyOn(addAccountStub, 'add');
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        email: 'email@gmail.com',
+        password: 'any_password',
+        passwordConfirmation: 'any_password'
+      }
+    };
+    sut.handle(httpRequest);
+    expect(addAccountSpy).toBeCalledWith({
+      name: 'any_name',
+      email: 'email@gmail.com',
+      password: 'any_password'
+    })
   });
 });
