@@ -5,11 +5,15 @@ import { HttpHelper } from '../helpers/HttpHelper';
 import { ControllerBase } from '../interfaces/ControllerBase';
 import { InvalidParamError } from '../errors/InvalidParamError';
 import { EmailValidatorAdapter } from '../interfaces/EmailValidatorAdapter';
+import { AddAccount, AddAccountModel } from '../../domain/usecases/AddAccount';
 
 export class SignUpController implements ControllerBase {
   private readonly _emailValidator: EmailValidatorAdapter;
-  constructor (emailValidator: EmailValidatorAdapter) {
+  private readonly _addAccount: AddAccount;
+
+  constructor (emailValidator: EmailValidatorAdapter, addAccount: AddAccount) {
     this._emailValidator = emailValidator;
+    this._addAccount = addAccount;
   }
 
   handle (httpRequest: HttpRequest): HttpResponse {
@@ -26,10 +30,14 @@ export class SignUpController implements ControllerBase {
       if (!this._emailValidator.isValid(httpRequest.body.email)) {
         return HttpHelper.badRequest(new InvalidParamError('email'))
       }
-      return HttpHelper.created<string>(httpRequest.body);
+      const account = this._addAccount.add({
+        name: httpRequest.body.name,
+        email: httpRequest.body.email,
+        password: httpRequest.body.password
+      })
+      return HttpHelper.created<AddAccountModel>(account);
     } catch {
       return HttpHelper.internalServerError();
     }
-    // should be: return HttpHelper.created<User> when domain entity is created
   }
 }
