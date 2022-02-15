@@ -4,14 +4,14 @@ import HttpResponse from '../interfaces/protocols/HttpResponse';
 import { HttpHelper } from '../helpers/HttpHelper';
 import { ControllerBase } from '../interfaces/ControllerBase';
 import { InvalidParamError } from '../errors/InvalidParamError';
-import { EmailValidatorAdapter } from '../interfaces/EmailValidatorAdapter';
+import { EmailValidator } from '../interfaces/EmailValidator';
 import { AddAccount, AddAccountModel } from '../../domain/usecases/AddAccount';
 
 export class SignUpController implements ControllerBase {
-  private readonly _emailValidator: EmailValidatorAdapter;
+  private readonly _emailValidator: EmailValidator;
   private readonly _addAccount: AddAccount;
 
-  constructor (emailValidator: EmailValidatorAdapter, addAccount: AddAccount) {
+  constructor (emailValidator: EmailValidator, addAccount: AddAccount) {
     this._emailValidator = emailValidator;
     this._addAccount = addAccount;
   }

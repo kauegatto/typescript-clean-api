@@ -1,17 +1,17 @@
 import { SignUpController } from '../../../presentation/controllers/SignUp';
-import { EmailValidatorAdapter } from '../../../presentation/interfaces/EmailValidatorAdapter';
+import { EmailValidator } from '../../../presentation/interfaces/EmailValidator';
 import HttpRequest from '../../../presentation/interfaces/protocols/HttpRequest';
 import AccountModel from '../../../domain/models/Account';
 import { AddAccount, AddAccountModel } from '../../../domain/usecases/AddAccount';
 
 interface SutTypes {
   sut: SignUpController
-  emailValidator: EmailValidatorAdapter
+  emailValidator: EmailValidator
   addAccountStub: AddAccount
 }
 
-const emailValidatorStubFactory = (): EmailValidatorAdapter => {
-  class EmailValidatorStub implements EmailValidatorAdapter {
+const emailValidatorStubFactory = (): EmailValidator => {
+  class EmailValidatorStub implements EmailValidator {
     isValid (email: string): boolean {
       return true;
     }
@@ -43,7 +43,6 @@ const sutFactory = (): SutTypes => {
     addAccountStub: addAccountStub
   }
 }
-
 describe('SignUp Controller', () => {
   test('Should return 400 if no name is provided ', () => {
     const { sut } = sutFactory();
@@ -139,19 +138,6 @@ describe('SignUp Controller', () => {
     sut.handle(httpRequest);
     expect(isValidSpy).toBeCalledWith('jorge@gmail.com');
   });
-  test('Should return 201 if valid body is provided ', () => {
-    const { sut } = sutFactory();
-    const httpRequest = {
-      body: {
-        name: 'any_name',
-        email: 'email@gmail.com',
-        password: 'any_password',
-        passwordConfirmation: 'any_password'
-      }
-    };
-    const httpResponse = sut.handle(httpRequest);
-    expect(httpResponse.statusCode).toBe(201);
-  });
   test('Should return 500 if emailValidator throws', () => {
     const { sut, emailValidator } = sutFactory()
     jest.spyOn(emailValidator, 'isValid').mockImplementationOnce(() => {
@@ -186,5 +172,34 @@ describe('SignUp Controller', () => {
       email: 'email@gmail.com',
       password: 'any_password'
     })
+  });
+  test('Should return 500 if addAccount throws', () => {
+    const { sut, addAccountStub } = sutFactory()
+    jest.spyOn(addAccountStub, 'add').mockImplementationOnce(() => {
+      throw new Error();
+    })
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        email: 'email@gmail.com',
+        password: 'any_password',
+        passwordConfirmation: 'any_password'
+      }
+    };
+    const httpResponse = sut.handle(httpRequest);
+    expect(httpResponse.statusCode).toBe(500);
+  });
+  test('Should return 201 if valid body is provided ', () => {
+    const { sut } = sutFactory();
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        email: 'email@gmail.com',
+        password: 'any_password',
+        passwordConfirmation: 'any_password'
+      }
+    };
+    const httpResponse = sut.handle(httpRequest);
+    expect(httpResponse.statusCode).toBe(201);
   });
 });
