@@ -1,5 +1,5 @@
+import { EmailValidatorAdapter } from '../../src/utils/EmailValidatorAdapter'
 import validator from 'validator'
-import { EmailValidatorAdapter } from '../../src/utils/EmailValidatorAdapter';
 
 const makeSut = (): EmailValidatorAdapter => {
   return new EmailValidatorAdapter()
@@ -9,15 +9,16 @@ jest.spyOn(validator, 'isEmail').mockImplementation(() => true);
 
 describe('EmailValidatorAdapter', () => {
   test('Should return false if validator returns false', () => {
-    const sut = makeSut()
+    const sut = makeSut();
     jest.spyOn(validator, 'isEmail').mockReturnValueOnce(false)
-    const isValid = sut.isValid('invalid_email@mail.com')
+    // we always mock true and mock once if we need to evaluate failures
+    const isValid = sut.isValid('invalid_mail@email.com')
     expect(isValid).toBe(false)
   })
 
   test('Should return true if validator returns true', () => {
     const sut = makeSut()
-    const isValid = sut.isValid('valid_email@email.com')
+    const isValid = sut.isValid('valid email')
     expect(isValid).toBe(true)
   })
 
