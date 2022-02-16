@@ -1,32 +1,31 @@
-import { EmailValidator } from '../presentation/interfaces/EmailValidator';
-import { EmailValidatorAdapter } from './EmailValidatorAdapter';
+import { EmailValidatorAdapter } from './EmailValidatorAdapter'
 
-describe('Validator Library Adapter', () => {
-  const ValidatorStubFactory = (): EmailValidator => {
-    return new class implements EmailValidator {
-      isValid (email: string): boolean {
-        return true;
-      }
-    }();
-  }
-  const EmailValidatorAdapterFactory = (validator: EmailValidator): EmailValidatorAdapter => {
-    return new EmailValidatorAdapter(validator);
-  };
-  const makeSut = (): { adapter: EmailValidatorAdapter, validator: EmailValidator } => {
-    const validator = ValidatorStubFactory();
-    const adapter = EmailValidatorAdapterFactory(validator);
-    return { adapter, validator };
-  };
-  test('Should pass the right values to validator', () => {
-    const { adapter, validator } = makeSut();
-    const validatorSpy = jest.spyOn(validator, 'isValid');
-    adapter.isValid('valid_email@email.com');
-    expect(validatorSpy).toBeCalledWith('valid_email@email.com');
-  });
+import validator from 'validator'
+
+const makeSut = (): EmailValidatorAdapter => {
+  return new EmailValidatorAdapter()
+}
+
+jest.spyOn(validator, 'isEmail').mockImplementation(() => true);
+
+describe('EmailValidatorAdapter', () => {
   test('Should return false if validator returns false', () => {
-    const { adapter, validator } = makeSut();
-    jest.spyOn(validator, 'isValid').mockReturnValueOnce(false);
-    const isValid: boolean = adapter.isValid('invalid_email');
-    expect(isValid).toBe(false);
-  });
+    const sut = makeSut()
+    jest.spyOn(validator, 'isEmail').mockReturnValueOnce(false)
+    const isValid = sut.isValid('invalid_email@mail.com')
+    expect(isValid).toBe(false)
+  })
+
+  test('Should return true if validator returns true', () => {
+    const sut = makeSut()
+    const isValid = sut.isValid('penis')
+    expect(isValid).toBe(true)
+  })
+
+  test('Should call validator with correct email', () => {
+    const sut = makeSut()
+    const isEmailSpy = jest.spyOn(validator, 'isEmail')
+    sut.isValid('any_email@mail.com')
+    expect(isEmailSpy).toHaveBeenCalledWith('any_email@mail.com')
+  })
 })
