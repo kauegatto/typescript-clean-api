@@ -1,8 +1,8 @@
-import { SignUpController } from '../../../presentation/controllers/SignUp';
-import { EmailValidator } from '../../../presentation/interfaces/EmailValidator';
-import HttpRequest from '../../../presentation/interfaces/protocols/HttpRequest';
-import AccountModel from '../../../domain/models/Account';
-import { AddAccount, AddAccountModel } from '../../../domain/usecases/AddAccount';
+import { SignUpController } from '../../../src/presentation/controllers/SignUp';
+import { EmailValidator } from '../../../src/presentation/interfaces/EmailValidator';
+import HttpRequest from '../../../src/presentation/interfaces/protocols/HttpRequest';
+import AccountModel from '../../../src/domain/models/Account';
+import { AddAccount, AddAccountModel } from '../../../src/domain/usecases/AddAccount';
 
 interface SutTypes {
   sut: SignUpController

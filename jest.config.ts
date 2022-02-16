@@ -1,5 +1,5 @@
 export default {
-  roots: ['<rootDir>/src'],
+  roots: ['<rootDir>/tests'],
   // Automatically clear mock calls, instances and results before every test
   clearMocks: true,
   // Indicates whether the coverage information should be collected while executing the test
